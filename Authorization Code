@@ -1,0 +1,43 @@
+VisualForce Page
+
+<apex:page controller="URLParameterController">
+    <apex:form >
+        <script>
+        function openWindow() {
+            var url = 'https://hic31-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9n_HvETGhr3CKHSk_eeHobZ9FCag4AYgMY1r7T..mY_JTx7OHfuQBwCmWE2WyduYsEh42NulZOYQK6ajn&redirect_uri=https://hic31-dev-ed.develop.lightning.force.com//apex/GetAuthorizationCode?core.apexpages.request.devconsole=1';
+            window.location.replace(url);
+        }
+        // Only call openWindow() if 'code' parameter is not present in the URL
+        if (!window.location.search.includes('code')) {
+            openWindow();
+        }
+        </script>
+        <apex:outputText value="The URL parameter value is: {!urlParam}" />
+    </apex:form>
+</apex:page>
+
+
+Controller:
+
+public class URLParameterController {
+   public String urlParam {get; set;}
+    
+    public URLParameterController() { 
+        // Get the current page reference 
+        ApexPages.PageReference pageRef = ApexPages.currentPage(); 
+		String currentUrl = pageRef.getUrl();
+
+ 		system.debug('Current URL===>'+currentUrl);
+                // Use regex to extract 'code' parameter value from the URL
+        Pattern p = Pattern.compile('code=([^&]*)');
+        Matcher m = p.matcher(currentUrl);
+        if (m.find()) {
+            urlParam = m.group(1);
+        }
+        system.debug('Code =='+urlParam);
+        urlParam = (String)pageRef.getParameters().get('code'); 
+        system.debug('urlParam==='+urlParam);
+        system.debug(pageRef.getParameters());
+
+    } 
+}
